@@ -6,15 +6,19 @@
 - Tiancheng Hu
 
 ## Starts everything from scratch
+- Pycharm 
+  - new Project
+  - Get from VCS
+  - login Github 
 - cd into the desired directory
 - first <pre>pip install git </prep>
 - git clone this repo to your local direction first, still in the desired directory and type
   - <prep>git clone https://github.com/Aniccam/CV1.git </prep>
 - download Pycharm, miniconda3
-- (in Pycharm): create virtual environment better with conda
-  - click <pre> New Project </pre>
-  - select the former directory
-  - leave everything as it was, in conda env only change python version in 3.8, name one env name as you like
+#- (in Pycharm): create virtual environment better with conda
+  #- click <pre> New Project </pre>
+  #- select the former directory
+  #- leave everything as it was, in conda env only change python version in 3.8, name one env name as you like
                 
 ## How to install dependencies:
 1. cd to the directory where requirements.txt is located
