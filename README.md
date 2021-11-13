@@ -10,7 +10,7 @@
   - new Project
   - Get from VCS
   - login Github 
-- cd into the desired directory, and <pre> git init</pre>
+#- cd into the desired directory, and <pre> git init</pre>
 - first <pre> sudo apt install git-all</prep>
 - git clone this repo to your local direction first, still in the desired directory and type
   - <prep>git clone -b master https://github.com/Aniccam/CV1.git </prep>
