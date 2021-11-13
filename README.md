@@ -13,7 +13,7 @@
 - cd into the desired directory, and <pre> git init</pre>
 - first <pre> sudo apt install git-all</prep>
 - git clone this repo to your local direction first, still in the desired directory and type
-  - <prep>git clone https://github.com/Aniccam/CV1.git </prep>
+  - <prep>git clone -b master https://github.com/Aniccam/CV1.git </prep>
 - download Pycharm, miniconda3
 #- (in Pycharm): create virtual environment better with conda
   #- click <pre> New Project </pre>
