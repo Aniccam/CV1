@@ -14,6 +14,10 @@ def load_points(path):
     '''
     #
     # Your Code Here
+    data = np.load(path)
+    image = data['image']
+    world = data['world']
+    return image[:, :2], world[:, :3]
     #
 
 def create_A(x, X):
@@ -31,6 +35,14 @@ def create_A(x, X):
     assert N == X.shape[0]
     #
     # Your Code Here
+    A = np.zeros((2*N, 12))
+    X_homo = np.hstack((X, np.ones((N)).reshape(-1, 1)))
+    for row in range(N):
+        row1 = np.hstack((np.array((0, 0, 0, 0)), -X_homo[row, :], x[row, 1]*X_homo[row, :]))
+        row2 = np.hstack((X_homo[row, :], np.array((0, 0, 0, 0)), -x[row, 0]*X_homo[row, :]))
+        A[2*row, :] = row1
+        A[2*row+1, :] = row2
+    return A
     #
 
 def homogeneous_Ax(A):
@@ -45,6 +57,12 @@ def homogeneous_Ax(A):
     """
     #
     # Your Code Here
+    _, _, Vh = scipy.linalg.svd(A)
+    if np.linalg.norm(Vh[[11], :]) != 0:
+        P = Vh[[11], :].reshape((3, 4))
+        return P
+    else:
+        return -1
     #
 
 
@@ -66,6 +84,13 @@ def solve_KR(P):
     """
     #
     # Your Code Here
+    M = P[:, :3]
+    K, R = scipy.linalg.rq(M)
+    H = np.diag(np.where(np.diag(K) < 0, -1., 1.))
+    H[2, 2] = 1/K[2, 2]
+    K = K.dot(H)
+    R = np.linalg.inv(H).dot(R)
+    return K, R
     #
 
 
@@ -81,4 +106,7 @@ def solve_c(P):
     """
     #
     # Your Code Here
+    _, _, Vh = scipy.linalg.svd(P)
+    c = Vh[3, :3]/Vh[3, 3]
+    return c
     #

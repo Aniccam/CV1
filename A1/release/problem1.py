@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 def display_image(img):
@@ -10,6 +11,7 @@ def display_image(img):
 
     #
     # You code here
+    return plt.imshow(img)
     #
 
 
@@ -22,6 +24,7 @@ def save_as_npy(path, img):
 
     #
     # You code here
+    return np.save(path, img)
     #
 
 
@@ -36,6 +39,7 @@ def load_npy(path):
 
     #
     # You code here
+    return np.load(path)
     #
 
 
@@ -51,6 +55,7 @@ def mirror_horizontal(img):
 
     #
     # You code here
+    return np.flipud(img)
     #
 
 
@@ -63,4 +68,10 @@ def display_images(img1, img2):
 
     #
     # You code here
+    plt.figure()
+    plt.subplot(1, 2, 1)
+    plt.imshow(img1)
+    plt.subplot(1, 2, 2)
+    plt.imshow(img2)
+    plt.show()
     #
