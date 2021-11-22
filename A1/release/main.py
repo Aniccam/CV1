@@ -103,7 +103,7 @@ def problem4():
     plt.title("Derivative magnitude")
 
     # threshold derivative
-    threshold = 0.09 # change threshold
+    threshold = .09 # change threshold
     edges = detectedges(imgx,imgy,threshold)
     plt.figure()
     plt.imshow(edges > 0, "gray", interpolation="none")
@@ -121,7 +121,7 @@ def problem4():
 
 
 if __name__ == "__main__":
-    problem1()
-    problem2()
-    problem3()
+    # problem1()
+    # problem2()
+    # problem3()
     problem4()

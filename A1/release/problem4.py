@@ -108,32 +108,35 @@ def nonmaxsupp(edges, Ix, Iy):
     # handle top-to-bottom edges: theta in [-90, -67.5] or (67.5, 90]
 
     # You code here
+    edges2 = edges
     Itheta = np.arctan2(Iy, Ix) * 180 / np.pi
     H, W = edges.shape
     for i in range(1, H-1):
         for j in range(1, W-1):
-            if -90 <= Itheta[i, j] <= -67.5 or 67.5 < Itheta[i, j] <= 90:
-                if edges[i-1, j] > edges[i, j] or edges[i+1, j] > edges[i, j]:
-                    edges[i, j] = 0
+            if -22.5 < Itheta[i, j] <= 22.5:
+                if edges[i - 1, j] > edges[i, j] or edges[i + 1, j] > edges[i, j]:
+                    edges2[i, j] = 0
+
 
     # handle left-to-right edges: theta in (-22.5, 22.5]
 
     # You code here
-            elif -22.5 < Itheta[i, j] <= 22.5:
+            elif -90 <= Itheta[i, j] <= -67.5 or 67.5 < Itheta[i, j] <= 90:
                 if edges[i, j-1] > edges[i, j] or edges[i, j+1] > edges[i, j]:
-                    edges[i, j] = 0
+                    edges2[i, j] = 0
 
     # handle bottomleft-to-topright edges: theta in (22.5, 67.5]
 
     # Your code here
-            elif 22.5 < Itheta[i, j] <= 67.5:
+            elif -67.5 <= Itheta[i, j] <= -22.5:
                 if edges[i-1, j+1] > edges[i, j] or edges[i+1, j-1] > edges[i, j]:
-                    edges[i, j] = 0
+                    edges2[i, j] = 0
 
     # handle topleft-to-bottomright edges: theta in [-67.5, -22.5]
 
     # Your code here
-            elif -67.5 <= Itheta[i, j] <= -22.5:
+            elif 22.5 < Itheta[i, j] <= 67.5:
                 if edges[i-1, j-1] > edges[i, j] or edges[i+1, j+1] > edges[i, j]:
-                    edges[i, j] = 0
-    return edges
+                    edges2[i, j] = 0
+
+    return edges2
