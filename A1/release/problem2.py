@@ -60,9 +60,9 @@ def assembleimage(r, g, b):
     # You code here
     H, W = r.shape
     Image = np.zeros((H, W, 3))
-    Image[:, :, 0] = b
+    Image[:, :, 2] = b
     Image[:, :, 1] = g
-    Image[:, :, 2] = r
+    Image[:, :, 0] = r
     return Image
     #
 
@@ -80,15 +80,16 @@ def interpolate(r, g, b):
     #
     # You code here
     H, W = r.shape
-    kernel_g = 1/4 * np.array([[1, 0, 1], [1, 0, 1], [0, 0, 0]])
-    kernel_b = 1/4 * np.array([[1, 1, 0], [1, 1, 0], [0, 0, 0]])
-    kernel_r = 1/4 * np.array([[0, 1, 0], [1, 1, 0], [0, 0, 1]])
+    kernel_g = 1/2 * np.array([[1, 1, 0], [0, 0, 0], [1, 1, 0]])
+    kernel_b = np.array([[1, 1, 0], [1, 1, 0], [0, 0, 0]])
+    kernel_r = np.array([[0, 1, 0], [1, 1, 0], [0, 0, 1]])
     g_interpolated = convolve(g, kernel_g)
     b_interpolated = convolve(b, kernel_b, mode='mirror')
     r_interpolated = convolve(r, kernel_r, mode='mirror')
+    g_interpolated = np.where(g_interpolated <= 1, g_interpolated, 1)
     img_interpolated = np.zeros((H, W, 3))
-    img_interpolated[:, :, 0] = b_interpolated
+    img_interpolated[:, :, 2] = b_interpolated
     img_interpolated[:, :, 1] = g_interpolated
-    img_interpolated[:, :, 2] = r_interpolated
+    img_interpolated[:, :, 0] = r_interpolated
     return img_interpolated
     #

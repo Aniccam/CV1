@@ -11,6 +11,7 @@ def display_image(img):
 
     #
     # You code here
+    plt.figure()
     return plt.imshow(img)
     #
 
@@ -73,5 +74,4 @@ def display_images(img1, img2):
     plt.imshow(img1)
     plt.subplot(1, 2, 2)
     plt.imshow(img2)
-    plt.show()
     #

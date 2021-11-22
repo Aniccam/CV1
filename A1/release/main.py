@@ -47,7 +47,6 @@ def problem2():
     img_interpolated = interpolate(r, g, b)
     display_image(img_interpolated)
 
-
 #
 # Problem 3
 #
