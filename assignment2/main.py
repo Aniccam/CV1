@@ -37,7 +37,6 @@ def problem1(fsize=5, nlevel=3, sigma=1.4):
     # finding matches
     root_dir = 'data'
     imgs, feats = p1.load_data(root_dir)
-
     # answers
     dist = p1.Distance()
     print(dist.answer())
