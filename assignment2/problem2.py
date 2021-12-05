@@ -24,9 +24,20 @@ def load_faces(path, ext=".pgm"):
     
     #
     # You code here
+    x = []
+    for root, dirs, files in os.walk(path):
+        for file in files:
+            if file.endswith(".pgm"):
+                img = Image.open(os.path.join(root, file))
+                img1 = np.asarray(img)
+                H, W = img1.shape
+                img1 = img1.flatten()
+                x.append(img1)
+    x = np.array(x)
+
     #
     
-    return np.random.random((16, 256)), (16, 16)
+    return x, (H, W)
 
 #
 # Task 2
@@ -66,7 +77,7 @@ class PCA(object):
                 - we need singular values which we can obtain from the eigenvalues"
         """
 
-        return (0, 0)
+        return (1, 1, 2, 3, 4)
 
 #
 # Task 3
@@ -82,8 +93,15 @@ def compute_pca(X):
         u: (M, N) bases with principal components
         lmb: (N, ) corresponding variance
     """
-    
-    return np.random.random((100, 10)), np.random.random(10)
+
+    N, M = X.shape
+    X = X.astype(np.float64)
+    X_mean = np.mean(X, axis=0)
+    X_Hut = (X - X_mean).transpose()
+    u, s, vh = np.linalg.svd(X_Hut, full_matrices=False)
+    lmb = np.power(s, 2) / N
+
+    return u, lmb
 
 #
 # Task 4
@@ -106,8 +124,17 @@ def basis(u, s, p = 0.5):
         containing at most p (percentile) of the variance.
     
     """
-    
-    return u
+
+    M = s.size
+    total = np.sum(s)
+    sum = 0.0
+    for i in range(M):
+        sum += s[i]
+        if sum >= p * total:
+            v = u[:, :i+1]
+            break
+
+    return v
 
 #
 # Task 5
@@ -125,8 +152,11 @@ def project(face_image, u):
         image_out: (N, ) vector, projection of face_image on 
         principal components
     """
-    
-    return np.random.random((256, ))
+
+    a = u.transpose().dot(face_image)
+    image_out = u.dot(a)
+
+    return image_out
 
 #
 # Task 6
@@ -153,7 +183,7 @@ class NumberOfComponents(object):
         For example: (1, 3)
         """
 
-        return 0
+        return (1, 4)
 
 
 #
@@ -172,8 +202,19 @@ def search(Y, x, u, top_n):
     Returns:
         Y: (top_n, M)
     """
-    
-    return np.random.random((top_n, 256))
+
+    top = []
+    Y1 = []
+    N, M = Y.shape
+    a = u.transpose().dot(x)
+    for i in range(N):
+        ai = u.transpose().dot(Y[i, :].transpose())
+        dist = np.linalg.norm(a-ai)
+        top.append((i, dist))
+    top.sort(key=lambda t:t[1])
+    [Y1.append(Y[top[i][0], :]) for i in range(top_n)]
+
+    return np.asarray(Y1)
 
 #
 # Task 8
@@ -194,5 +235,16 @@ def interpolate(x1, x2, u, N):
         Y: (N, M) interpolated results. The first dimension is in the index into corresponding
         image; Y[0] == project(x1, u); Y[-1] == project(x2, u)
     """
-    
-    return np.random.random((3, 256))
+
+    Y = []
+    A = []
+    _, D = u.shape
+    a1 = u.transpose().dot(x1)
+    a2 = u.transpose().dot(x2)
+    [A.append(np.linspace(a1[i], a2[i], N)) for i in range(D)]
+    A = np.asarray(A).transpose()
+    for i in range(N):
+        img = u.dot(A[i, :])
+        Y.append(img)
+
+    return np.asarray(Y)
