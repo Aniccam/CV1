@@ -129,15 +129,17 @@ def template_distance(v1, v2):
     # TODO
 
     # Dot Product
-    # norm_v1 = np.linalg.norm(np.array(v1))
-    # norm_v2 = np.linalg.norm(np.array(v2))
-    # distance = np.dot(v1.T,v2) / (norm_v1 * norm_v2)
+    norm_v1 = np.linalg.norm(np.array(v1))
+    norm_v2 = np.linalg.norm(np.array(v2))
+    cos_theta = np.dot(v1.T,v2) / (norm_v1 * norm_v2)
+    distance = np.arccos(cos_theta)
 
     # SSD
-    distance2 = np.linalg.norm(np.array(v1) - np.array(v2))
+    # distance = np.linalg.norm(np.array(v1) - np.array(v2))
     #
-    # We think with SSD we can anticipate the results are more robust and need less computational cost.
-    return distance2
+    # SSD is for us more reasonable, with dot product we can not find the matched images
+    # because we think with SSD we can anticipate the results are more robust and need less computational cost.
+    return distance
 
 
 def sliding_window(img, feat, step=1):
@@ -166,7 +168,7 @@ def sliding_window(img, feat, step=1):
         for i in range(0, H-h, step):
             for j in range(0, W-w, step):
                 v1 = img[i:i+h, j:j+w].flatten()
-                scores.append(template_distance(v1, v2) )
+                scores.append(template_distance(v1, v2))
         return np.min(scores)
 
 
@@ -196,7 +198,7 @@ class Distance(object):
             'I will use Dot Product because it is more computationally efficient.'
         '''
 
-        return (2,1,3,4)  # TODO
+        return (2, 1)  # TODO
 
 
 def find_matching_with_scale(imgs, feats):
@@ -213,12 +215,9 @@ def find_matching_with_scale(imgs, feats):
         feat: facial feature
     '''
     match = []
-    # (score, g_im, feat) = (None, None, None)
 
     #
     # TODO
-
-
 
     for feat in feats:
         scoresortbyimage = []
@@ -233,8 +232,6 @@ def find_matching_with_scale(imgs, feats):
             scoresortbyimage.append(scores)
             gimssortbyimage.append(gims)
         loc = np.unravel_index((np.array(scoresortbyimage)).argmin(), (np.array(scoresortbyimage)).shape)
-            # np.argmin(np.array(scoresortbyimage))
-        print(loc)
         match.append((np.array(scoresortbyimage), gimssortbyimage[loc[0]][loc[1]], feat ))
 
     #
