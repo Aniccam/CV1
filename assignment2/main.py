@@ -97,4 +97,4 @@ def problem2():
 
 if __name__ == "__main__":
     problem1()
-    # problem2()
+    problem2()

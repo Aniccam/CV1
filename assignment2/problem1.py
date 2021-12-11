@@ -129,13 +129,13 @@ def template_distance(v1, v2):
     # TODO
 
     # Dot Product
-    norm_v1 = np.linalg.norm(np.array(v1))
-    norm_v2 = np.linalg.norm(np.array(v2))
-    cos_theta = np.dot(v1.T,v2) / (norm_v1 * norm_v2)
-    distance = np.arccos(cos_theta)
+    # norm_v1 = np.linalg.norm(np.array(v1))
+    # norm_v2 = np.linalg.norm(np.array(v2))
+    # cos_theta = np.dot(v1.T,v2) / (norm_v1 * norm_v2)
+    # distance = np.arccos(cos_theta)
 
     # SSD
-    # distance = np.linalg.norm(np.array(v1) - np.array(v2))
+    distance = np.linalg.norm(np.array(v1) - np.array(v2))
     #
     # SSD is for us more reasonable, with dot product we can not find the matched images
     # because we think with SSD we can anticipate the results are more robust and need less computational cost.
