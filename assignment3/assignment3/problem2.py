@@ -271,16 +271,18 @@ class Problem2:
         p1 = pairs[:, :2]
         p2 = pairs[:, -2:]
         max_inliers = 0
+
         for i in range(int(n_iters)):
             sample1, sample2 = self.pick_samples(p1, p2, k)
             p1_con, T1 = self.condition_points(sample1)
             p2_con, T2 = self.condition_points(sample2)
-            H, HC = self.compute_homography(p1_con, p2_con, T1, T2)
-            dist = self.compute_homography_distance(H, p1, p2)
+            H_i, HC_i = self.compute_homography(p1_con, p2_con, T1, T2)
+            dist = self.compute_homography_distance(H_i, p1, p2)
             N, N_inliers = self.find_inliers(pairs, dist, threshold)
             if N > max_inliers:
                 max_inliers = N
                 inliers = N_inliers
+                H = H_i
 
         return H, max_inliers, inliers
     #

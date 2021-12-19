@@ -134,5 +134,5 @@ def problem2():
 
 
 if __name__ == "__main__":
-    problem1()
+    # problem1()
     problem2()
