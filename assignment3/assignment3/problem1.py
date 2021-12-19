@@ -1,7 +1,7 @@
+import matplotlib.pyplot as plt
 import numpy as np
 from scipy import ndimage
 from scipy.ndimage import convolve, maximum_filter
-
 
 def gauss2d(sigma, fsize):
     """ Create a 2D Gaussian filter
@@ -49,40 +49,18 @@ def compute_hessian(img, gauss, fx, fy):
 
     #
     # You code here
-    #
-    # h, w = np.shape(img)
-    # Ix = np.zeros(h, w)
-    # Iy = np.zeros(h, w)
-    # I_xx = np.zeros(h, w)
-    # I_yy = np.zeros(h, w)
-    # I_xy = np.zeros(h, w)
-    # mirror boundry conditions
-    # mirror = np.copyMakeBorder(img, 1, 1, 1, 1, np.BORDER_CONSTANT, value=0)
-    # for i in range(1, w - 1):
-        # for j in range(1, h - 1):
-            # Ix[i, j]  = ndimage.convolve(mirror[i, j], fx)
-            # Iy[i, j] = ndimage.convolve(mirror[i, j], fy)
-            # I_xx[i, j] = ndimage.convolve(Ix[i, j], fx)
-            # I_yy[i, j] = ndimage.convolve(Iy[i, j], fy)
-            # I_xy[i, j] = ndimage.convolve(Iy[i, j], fx)
-    # mirror boundry conditions
-
-    # padding = np.pad(img, ((1,1),(1,1)), 'constant', constant_values=(0,0))
-    # Ix  = ndimage.convolve(padding, fx)
-    # Iy = ndimage.convolve(padding, fy)
-    # I_xx = ndimage.convolve(Ix, fx)
-    # I_yy = ndimage.convolve(Iy, fy)
-    # I_xy = ndimage.convolve(Iy, fx)
-
-    padding = np.pad(img, ((1,1),(1,1)), 'constant', constant_values=(0,0))
-    g_filtered = ndimage.convolve(padding,gauss)
-    Ix  = ndimage.convolve(g_filtered, fx)
-    Iy = ndimage.convolve(g_filtered, fy)
-    I_xx = ndimage.convolve(Ix, fx)
-    I_yy = ndimage.convolve(Iy, fy)
-    I_xy = ndimage.convolve(Iy, fx)
+    # smooth the image
+    smoothed = convolve(img, gauss, mode='mirror')
+    # derivative
+    I_x = convolve(smoothed, fx, mode='mirror')
+    I_xx = convolve(I_x, fx, mode='mirror')
+    I_y = convolve(smoothed, fy, mode='mirror')
+    I_yy = convolve(I_y, fy, mode='mirror')
+    I_xy = convolve(I_x, fy, mode='mirror')
 
     return I_xx, I_yy, I_xy
+    #
+
 
 
 def compute_criterion(I_xx, I_yy, I_xy, sigma):
@@ -100,16 +78,13 @@ def compute_criterion(I_xx, I_yy, I_xy, sigma):
 
     #
     # You code here
+    H, W = I_xx.shape
+    criterion = np.zeros((H, W))
+    for i in range(H):
+        for j in range(W):
+            criterion[i, j] = I_xx[i, j] * I_yy[i, j] - I_xy[i, j] ** 2
+    return sigma ** 4 * criterion
     #
-    # h, w = np.shape(I_xx)
-    # criterion = np.zeros(h,w)
-    # for i in range(0,w):
-        # for j in range(0,h):
-            # criterion[i,j] = sigma(I_xx[i,j] * I_yy[i,j] - I_xy[i,j] * I_xy[i,j])
-    # return criterion
-
-    criterion = sigma * (I_xx * I_yy - I_xy**2)
-    return criterion
 
 
 def nonmaxsuppression(criterion, threshold):
@@ -127,60 +102,22 @@ def nonmaxsuppression(criterion, threshold):
 
     #
     # You code here
+
+    criterion_allmax = maximum_filter(criterion, size=5, mode='constant')
+    criterion_localmax = np.where(criterion == criterion_allmax, criterion, 0)
+
+    # remove the image borders
+    criterion_localmax[:5] = 0
+    criterion_localmax[-5:] = 0
+    criterion_localmax[:, :5] = 0
+    criterion_localmax[:, -5:] = 0
+
+    # find local maxima above given threshold
+    criterion_thre = np.where(criterion_localmax > threshold, 1, 0)
+
+    # get coordinates of local maxima above given threshold
+    f = criterion_thre.nonzero()
+
+    return f[0], f[1]
     #
-    # h,w = np.shape(criterion)
-    # rows = np.zeros(h,)
-    # cols = np.zeros(h,)
-    # padding = np.pad(criterion, ((1,1),(1,1)), 'constant', constant_values=(0,0))
-    # for i in range(0, w-1):
-        # for j in range(0, h-1):
-           # for t in range(-2, 2):
-               # for s in range(2, 2):
-                    #if(i - t <= 0):
-                   # if(padding[i - t, j - s] > threshold):
-                       # rows[j] = j
-                       # cols[i] = i
-    #max = 0
-    #if(criterion[i - t, j - s] > max):
-       #max = criterion[i - t, j - s]
-    # h,w = np.shape(criterion)
-    # rows = np.zeros(h,)
-    # cols = np.zeros(h,)
-    # g = 0
-    # h = 0
-    # padding = np.pad(criterion, ((2,2),(2,2)), 'constant', constant_values=(0,0))
-    # for i in range(2, w-2):
-    #    for j in range(2, h-2):
-    #        value = padding[i - 2, j - 2]
-    #        for t in range(-2, 2):
-    #            for s in range(-2, 2):
-                   #if(i - t <= 0):
-                    #if(padding[i - t, j - s] > value):
-                        #value = padding[i - t, j - s]
-            #if(value > threshold):
-                #g += 1
-                #h += 1
-                #rows[g] = j
-                #cols[h] = i
 
-    h,w = np.shape(criterion)
-    rows = np.zeros(h//5,)
-    cols = np.zeros(h//5,)
-    g = 0
-    h = 0
-    padding = np.pad(criterion, ((2,2),(2,2)), 'constant', constant_values=(0,0))
-    for i in range(2, w-2, 5):
-        for j in range(2, h-2, 5):
-            value = padding[i - 2, j - 2]
-            for t in range(-2, 2):
-                for s in range(-2, 2):
-                    #if(i - t <= 0):
-                    if(padding[i - t, j - s] > value):
-                        value = padding[i - t, j - s]
-            if(value > threshold):
-                rows[g] = j
-                cols[h] = i
-                g += 1
-                h += 1
-
-    return rows, cols
