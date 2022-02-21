@@ -34,6 +34,12 @@ def enforce_rank2(A):
 
     #
     # You code here
+
+    u, s, vh = np.linalg.svd(A)
+    s[-1] = 0
+    A_hat = u @ np.diag(s) @ vh
+
+    return A_hat
     #
 
 
@@ -50,6 +56,20 @@ def compute_fundamental(p1, p2):
 
     #
     # You code here
+
+    l, _ = p1.shape
+    A = np.zeros((2*l, 9))
+
+    # construct A from A*f = 0
+    for i in range(l):
+        A[i, :] = np.array([p1[i, 0]*p2[i, 0], p1[i, 1]*p2[i, 0], p2[i, 0], p1[i, 0]*p2[i, 1], p1[i, 1]*p2[i, 1], p2[i, 1], p1[i, 0], p1[i, 1], 1])
+
+    # compute F with svd and enforce F rank 2
+    _, _, vh = np.linalg.svd(A)
+    F = vh[8, :].reshape((3, 3))
+
+    return enforce_rank2(F)
+
     #
 
 
@@ -67,6 +87,13 @@ def eight_point(p1, p2):
 
     #
     # You code here
+
+    ps1, T1 = condition_points(p1)
+    ps2, T2 = condition_points(p2)
+    F_hat = compute_fundamental(ps1, ps2)
+    F = T2.T @ F_hat @ T1
+
+    return F
     #
 
 
@@ -87,6 +114,19 @@ def draw_epipolars(F, p1, img):
 
     #
     # You code here
+
+    p1_h = np.concatenate([p1, np.ones((p1.shape[0], 1))], axis=1)
+    l2 = p1_h @ F.T
+
+    H, W, _ = img.shape
+    l, _ = p1.shape
+
+    X1 = np.zeros(l)
+    Y1 = (- l2[:, 2] - l2[:, 0] * X1) / l2[:, 1]
+    X2 = W * np.ones(l)
+    Y2 = (- l2[:, 2] - l2[:, 0] * X2) / l2[:, 1]
+
+    return X1, X2, Y1, Y2
     #
 
 
@@ -106,6 +146,11 @@ def compute_residuals(p1, p2, F):
 
     #
     # You code here
+    residual = np.absolute(p1 @ F @ p2.T)
+    max_residual = np.max(residual)
+    avg_residual = np.mean(residual)
+
+    return max_residual, avg_residual
     #
 
 
@@ -121,4 +166,9 @@ def compute_epipoles(F):
 
     #
     # You code here
+    u, _, vh = np.linalg.svd(F)
+    e2 = vh[-1, :-1] / vh[-1, -1]
+    e1 = u[:-1, -1] / u[-1, -1]
+
+    return e1, e2
     #
